@@ -17,13 +17,16 @@ from antlr4 import ParseTreeWalker
 from antlr4 import InputStream
 
 from prov.model import ProvDocument
-
 from prov.serializers import Serializer
+
+# imports for automatically generated classes from antlr
 from prov.serializers.antlr_grammars.PROV_NListener import PROV_NListener
 from prov.serializers.antlr_grammars.PROV_NParser import PROV_NParser
 from prov.serializers.antlr_grammars.PROV_NLexer import PROV_NLexer
 
+# codecs is used to generate a utf-8 string from bytesIO inputs
 import codecs
+# TODO: used for debug outputs, remove at the end
 from pprint import pprint
 
 class ProvNAntlrListener(PROV_NListener):
@@ -52,6 +55,24 @@ class ProvNAntlrListener(PROV_NListener):
         """
         return iri.getText()[1:-1]
 
+    def getIdentifierFromContext(self, ctx):
+        """Retrieves an identifier from an IdentifierContext.
+        This method will check which identifier element is
+        populated and parse it to a String representation
+        suitable to be used as an identifier to create 
+        prov elements.
+
+        :param ctx: IdentifierContext which will be used.
+        """
+        if ctx.PREFX() is not None:
+            return ctx.PREFX().getText()
+        if ctx.QUALIFIED_NAME() is not None:
+            return ctx.QUALIFIED_NAME().getText()
+
+        # TODO: is this possible? If so, how to handle?
+        # first solution: return None
+        return None
+
     def enterDocument(self, ctx):
         self._doc = ProvDocument()
 
@@ -62,16 +83,7 @@ class ProvNAntlrListener(PROV_NListener):
         self._doc.add_namespace(ctx.PREFX().getText(), ProvNAntlrListener.iriToUri(ctx.namespace().IRI_REF()))
 
     def enterEntityExpression(self, ctx):
-        ident = ctx.identifier()
-        if ident.PREFX() is not None:
-            prefx = ident.PREFX()
-            self._doc.entity(prefx)
-        elif ident.QUALIFIED_NAME() is not None:
-            qn = ident.QUALIFIED_NAME()
-            self._doc.entity(qn.getText())
-        else:
-            print("WEIRD")
-
+        self._doc.entity(self.getIdentifierFromContext(ctx.identifier()))
 
 class ProvNSerializer(Serializer):
     """PROV-N serializer for ProvDocument
