@@ -4,3 +4,4 @@ flake8==3.0.4
 sphinx==1.4.8
 tox==2.4.1
 wheel==0.29.0
+antlr4-python3-runtime==4.7.1
