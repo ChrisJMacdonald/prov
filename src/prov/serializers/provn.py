@@ -28,6 +28,7 @@ from prov.serializers.antlr_grammars.PROV_NLexer import PROV_NLexer
 import codecs
 # TODO: used for debug outputs, remove at the end
 from pprint import pprint
+import pdb
 
 class ProvNAntlrListener(PROV_NListener):
     """
@@ -73,6 +74,50 @@ class ProvNAntlrListener(PROV_NListener):
         # first solution: return None
         return None
 
+    def stripExtraQuotes(string):
+        if string[:1] == "'" and string[-1:] == "'":
+            return string[1:-1]
+        if string[:1] == '"' and string[-1:] == '"':
+            return string[1:-1]
+        return string
+
+    def addAttributesToStatement(self, stmt, ctx:PROV_NParser.OptionalAttributeValuePairsContext):
+        """Adds optional attributes to a statement.
+        
+        :param stmt: The statement the optional attributes will be added to.
+        :param ctx: The context that holds the optional attributes for stmt.
+        """
+        if ctx.attributeValuePairs() is not None:
+            for attr in ctx.attributeValuePairs().attributeValuePair():
+                dire = {attr.attribute().getText(): ProvNAntlrListener.stripExtraQuotes(attr.literal().getText())}
+                stmt.add_attributes(dire)
+
+    def getValueFromContext(self, ctx):
+        """Retrieves an value notation from a Context.
+        This method will check which value notation is
+        populated and parse it to a String representation
+        suitable to be used as an value for attributes.
+
+        :param ctx: LiteralContext which will be used.
+        """
+        if ctx.typedLiteral() is not None:
+            return '"{}" %% {}'.format(ctx.typedLiteral().STRING_LITERAL(), self.getIdentifierFromContext(ctx.typedLiteral().datatype()))
+        if ctx.convenienceNotation() is not None:
+            convNot = ctx.convenienceNotation()
+            if convNot.STRING_LITERAL() is not None:
+                string = convNot.STRING_LITERAL().getText()
+                if convNot.LANGTAG() is not None:
+                    return '"{}"@{}'.format(string, convNot.LANGTAG())
+                return '"{}"'.format(convNot.STRING_LITERAL())
+            if convNot.INT_LITERAL() is not None:
+                return convNot.INT_LITERAL().getText()
+            if convNot.QUALIFIED_NAME_LITERAL() is not None:
+                return convNot.QUALIFIED_NAME_LITERAL().getText()
+            return None
+
+        # if not value is given, return None
+        return None
+
     def enterDocument(self, ctx):
         self._doc = ProvDocument()
 
@@ -83,7 +128,8 @@ class ProvNAntlrListener(PROV_NListener):
         self._doc.add_namespace(ctx.PREFX().getText(), ProvNAntlrListener.iriToUri(ctx.namespace().IRI_REF()))
 
     def enterEntityExpression(self, ctx):
-        self._doc.entity(self.getIdentifierFromContext(ctx.identifier()))
+        ent = self._doc.entity(self.getIdentifierFromContext(ctx.identifier()))
+        self.addAttributesToStatement(ent, ctx.optionalAttributeValuePairs())
 
 class ProvNSerializer(Serializer):
     """PROV-N serializer for ProvDocument
