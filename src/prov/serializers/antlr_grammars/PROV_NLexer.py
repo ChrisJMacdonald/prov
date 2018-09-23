@@ -1,4 +1,4 @@
-# Generated from /home/marcel/workspace/antlr4/PROV_N.g4 by ANTLR 4.7.1
+# Generated from PROV_N.g4 by ANTLR 4.7.1
 from antlr4 import *
 from io import StringIO
 from typing.io import TextIO

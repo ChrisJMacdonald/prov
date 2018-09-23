@@ -18,9 +18,16 @@ from antlr4 import InputStream
 
 from prov.model import ProvDocument
 from prov.serializers import Serializer
+from prov.constants import (
+    PROV, PROV_ID_ATTRIBUTES_MAP, PROV_N_MAP, PROV_BASE_CLS, XSD_QNAME, PROV_ENTITY,
+    PROV_END, PROV_START, PROV_USAGE, PROV_GENERATION, PROV_DERIVATION, PROV_INVALIDATION,
+    PROV_ALTERNATE, PROV_MENTION, PROV_DELEGATION, PROV_ACTIVITY, PROV_ATTR_STARTTIME,
+    PROV_ATTR_ENDTIME, PROV_LOCATION, PROV_ATTR_TIME, PROV_ROLE, PROV_COMMUNICATION,
+    PROV_ATTR_INFORMANT, PROV_ATTR_RESPONSIBLE, PROV_ATTR_TRIGGER, PROV_ATTR_ENDER,
+    PROV_ATTR_STARTER, PROV_ATTR_USED_ENTITY, PROV_ASSOCIATION)
 
 # imports for automatically generated classes from antlr
-from prov.serializers.antlr_grammars.PROV_NListener import PROV_NListener
+from prov.serializers.antlr_grammars.PROV_NVisitor import PROV_NVisitor
 from prov.serializers.antlr_grammars.PROV_NParser import PROV_NParser
 from prov.serializers.antlr_grammars.PROV_NLexer import PROV_NLexer
 
@@ -30,7 +37,7 @@ import codecs
 from pprint import pprint
 import pdb
 
-class ProvNAntlrListener(PROV_NListener):
+class ProvNAntlrVisitor(PROV_NVisitor):
     """
     An extension of the automatically generated PROV_NListener, based
     on the PROV-N antlr4 grammar provided by @TomasKulhanek on GitHub
@@ -41,95 +48,134 @@ class ProvNAntlrListener(PROV_NListener):
 
     """
 
-    def __init__(self):
-        self._doc = None
+    def visitDocument(self, ctx):
+        document = ProvDocument()
+        self._doc = document
 
-    @property
-    def document(self):
-        return self._doc
+        # retrieve the namespaces as a list of prefx, iri_ref tuples (both as strings)
+        namespaceDeclarations = ctx.namespaceDeclarations()
+        if namespaceDeclarations is not None:
+            namespaces = self.visitNamespaceDeclarations(namespaceDeclarations)
+            for ns in namespaces:
+                document.add_namespace(ns[0], ns[1])
 
-    def iriToUri(iri):
-        """Converts an iri to an uri String. This method enables
-        handling iri-references from antlr at a central point.
+        expression = ctx.expression()
 
-        :param iri: The IRI to transform
+        for exp in expression:
+            # TODO: do i need that?
+            rec = self.visitExpression(exp)
+
+        print(document.get_provn())
+        return document
+
+    def visitNamespaceDeclarations(self, ctx):
+        """ Visit the namespaces and retrieve them as PREFX, IRI_REF tuples in a list.
         """
-        return iri.getText()[1:-1]
+        namespaces = []
+        #defNsDeclaration = ctx.defaultNamespaceDeclaration()
+        #if defNsDeclaration is not None:
+        #    self.visitDefaultNamespaceDeclaration(defNsDeclaration)
 
-    def getIdentifierFromContext(self, ctx):
-        """Retrieves an identifier from an IdentifierContext.
-        This method will check which identifier element is
-        populated and parse it to a String representation
-        suitable to be used as an identifier to create 
-        prov elements.
+        nsDeclaration = ctx.namespaceDeclaration()
+        if nsDeclaration is not None:
+            for ns in nsDeclaration:
+                namespaces.append(self.visitNamespaceDeclaration(ns))
 
-        :param ctx: IdentifierContext which will be used.
+        return namespaces
+
+    def visitDefaultNamespaceDeclaration(self, ctx):
+        print(ctx.IRI_REF())
+        return None
+    
+    def visitNamespaceDeclaration(self, ctx):
+        """ Retrieve the prefix (PREFX) and the uri (IRI_REF) from a namespace context, return them as a tuple (PREFX, IRI_REF)
         """
+        
+        prefx = ctx.PREFX().getText()
+        iri_ref = ctx.namespace().IRI_REF().getText()
+        # clean brackets if necessary
+        if iri_ref[:1] == '<' and iri_ref[-1:] == '>':
+            iri_ref = iri_ref[1:-1]
+        return (prefx, iri_ref)
+    
+    def visitExpression(self, ctx):
+        """ Retrieves an expression in the form to create a new record: record_type (see :py:const:`PROV_REC_CLS`), an identifier and a dict of attributes.
+        """
+
+        if ctx.entityExpression() is not None:
+            return self.visitEntityExpression(ctx.entityExpression())
+
+    def visitEntityExpression(self, ctx):
+        """ Retrieves an entity in a triplet form: record_type (see :py:const:`PROV_REC_CLS`), an identifier and a dict of attributes
+        """
+
+        identifier = self.visitIdentifier(ctx.identifier())
+        entity = self._doc.entity(identifier)
+
+        optionalAttributes = ctx.optionalAttributeValuePairs()
+        if optionalAttributes is not None:
+            attValPairsContext = optionalAttributes.attributeValuePairs()
+            if attValPairsContext is not None:
+                for keyVals in attValPairsContext.attributeValuePair():
+                    attrPair = self.visitAttributeValuePair(keyVals)
+                    entity.add_attributes(attrPair)
+
+        return entity
+
+    def visitIdentifier(self, ctx):
+        """ Retrieves a string value for an identifier
+        """
+
         if ctx.PREFX() is not None:
             return ctx.PREFX().getText()
-        if ctx.QUALIFIED_NAME() is not None:
+        else:
             return ctx.QUALIFIED_NAME().getText()
+    
+    def visitAttributeValuePair(self, ctx):
+        """ Returns an attribute value pair from an expression as a dictionary {attribute: value}
+        """
 
-        # TODO: is this possible? If so, how to handle?
-        # first solution: return None
-        return None
+        return {
+            self.visitAttribute(ctx.attribute()): self.visitLiteral(ctx.literal())
+        }
 
-    def stripExtraQuotes(string):
-        if string[:1] == "'" and string[-1:] == "'":
-            return string[1:-1]
-        if string[:1] == '"' and string[-1:] == '"':
+    def visitAttribute(self, ctx):
+        """ As the PROV-N specification states that attribute = QUALIFIED_NAME, it can be handled equally as identifiers of records.
+        """
+
+        return self.visitIdentifier(ctx)
+    
+    def visitLiteral(self, ctx):
+        if ctx.typedLiteral() is not None:
+            return "typedLiteral"
+        if ctx.convenienceNotation() is not None:
+            return self.visitConvenienceNotation(ctx.convenienceNotation())
+        return ""
+    
+    def visitConvenienceNotation(self, ctx):
+        """ Retrieves values from convenience notations within attribute lists of prov records as a single value (depending on its type)
+        """
+
+        # handle string literals
+        if ctx.STRING_LITERAL() is not None:
+            if ctx.LANGTAG() is not None:
+                return "how to parse that?"
+            return self.cleanStringValues(ctx.STRING_LITERAL().getText())
+
+        # handle int literals
+        if ctx.INT_LITERAL() is not None:
+            # TODO: parse as int
+            return ctx.INT_LITERAL().getText()
+
+        # handle qualified name literals
+        if ctx.QUALIFIED_NAME_LITERAL() is not None:
+            return self._doc.valid_qualified_name(self.cleanStringValues(ctx.QUALIFIED_NAME_LITERAL().getText()))
+
+    def cleanStringValues(self, string):
+        if string[:1] == string[-1:] and string[:1] in ["'", '"']:
             return string[1:-1]
         return string
 
-    def addAttributesToStatement(self, stmt, ctx:PROV_NParser.OptionalAttributeValuePairsContext):
-        """Adds optional attributes to a statement.
-        
-        :param stmt: The statement the optional attributes will be added to.
-        :param ctx: The context that holds the optional attributes for stmt.
-        """
-        if ctx.attributeValuePairs() is not None:
-            for attr in ctx.attributeValuePairs().attributeValuePair():
-                dire = {attr.attribute().getText(): ProvNAntlrListener.stripExtraQuotes(attr.literal().getText())}
-                stmt.add_attributes(dire)
-
-    def getValueFromContext(self, ctx):
-        """Retrieves an value notation from a Context.
-        This method will check which value notation is
-        populated and parse it to a String representation
-        suitable to be used as an value for attributes.
-
-        :param ctx: LiteralContext which will be used.
-        """
-        if ctx.typedLiteral() is not None:
-            return '"{}" %% {}'.format(ctx.typedLiteral().STRING_LITERAL(), self.getIdentifierFromContext(ctx.typedLiteral().datatype()))
-        if ctx.convenienceNotation() is not None:
-            convNot = ctx.convenienceNotation()
-            if convNot.STRING_LITERAL() is not None:
-                string = convNot.STRING_LITERAL().getText()
-                if convNot.LANGTAG() is not None:
-                    return '"{}"@{}'.format(string, convNot.LANGTAG())
-                return '"{}"'.format(convNot.STRING_LITERAL())
-            if convNot.INT_LITERAL() is not None:
-                return convNot.INT_LITERAL().getText()
-            if convNot.QUALIFIED_NAME_LITERAL() is not None:
-                return convNot.QUALIFIED_NAME_LITERAL().getText()
-            return None
-
-        # if not value is given, return None
-        return None
-
-    def enterDocument(self, ctx):
-        self._doc = ProvDocument()
-
-    def enterDefaultNamespaceDeclaration(self, ctx):
-        self._doc.set_default_namespace(ProvNAntlrListener.iriToUri(ctx.IRI_REF()))
-
-    def enterNamespaceDeclaration(self, ctx):
-        self._doc.add_namespace(ctx.PREFX().getText(), ProvNAntlrListener.iriToUri(ctx.namespace().IRI_REF()))
-
-    def enterEntityExpression(self, ctx):
-        ent = self._doc.entity(self.getIdentifierFromContext(ctx.identifier()))
-        self.addAttributesToStatement(ent, ctx.optionalAttributeValuePairs())
 
 class ProvNSerializer(Serializer):
     """PROV-N serializer for ProvDocument
@@ -163,8 +209,5 @@ class ProvNSerializer(Serializer):
         tokenStream = CommonTokenStream(lexer)
         parser = PROV_NParser(tokenStream)
         tree = parser.document()
-        listener = ProvNAntlrListener()
-        walker = ParseTreeWalker()
-        walker.walk(listener, tree)
-        return listener.document
-        #raise NotImplementedError
+        visitor = ProvNAntlrVisitor()
+        return visitor.visit(tree)
