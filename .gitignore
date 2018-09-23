@@ -11,6 +11,14 @@ Desktop.ini
 
 
 #############
+## IDEs
+#############
+
+# Visual Studio Code
+
+.vscode/*
+
+#############
 ## Python
 #############
 
@@ -60,3 +68,4 @@ docs/_build
 
 # Mac
 .DS_Store
+.vscode/settings.json

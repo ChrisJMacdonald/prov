@@ -1,4 +1,4 @@
-# Generated from /home/marcel/workspace/antlr4/PROV_N.g4 by ANTLR 4.7.1
+# Generated from PROV_N.g4 by ANTLR 4.7.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -434,13 +434,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_document
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDocument" ):
-                listener.enterDocument(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDocument" ):
-                listener.exitDocument(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDocument" ):
+                return visitor.visitDocument(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -520,13 +518,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_namespaceDeclarations
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNamespaceDeclarations" ):
-                listener.enterNamespaceDeclarations(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNamespaceDeclarations" ):
-                listener.exitNamespaceDeclarations(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNamespaceDeclarations" ):
+                return visitor.visitNamespaceDeclarations(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -582,13 +578,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_defaultNamespaceDeclaration
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDefaultNamespaceDeclaration" ):
-                listener.enterDefaultNamespaceDeclaration(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDefaultNamespaceDeclaration" ):
-                listener.exitDefaultNamespaceDeclaration(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDefaultNamespaceDeclaration" ):
+                return visitor.visitDefaultNamespaceDeclaration(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -627,13 +621,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_namespaceDeclaration
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNamespaceDeclaration" ):
-                listener.enterNamespaceDeclaration(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNamespaceDeclaration" ):
-                listener.exitNamespaceDeclaration(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNamespaceDeclaration" ):
+                return visitor.visitNamespaceDeclaration(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -670,13 +662,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_namespace
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNamespace" ):
-                listener.enterNamespace(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNamespace" ):
-                listener.exitNamespace(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNamespace" ):
+                return visitor.visitNamespace(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -727,13 +717,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_bundle
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterBundle" ):
-                listener.enterBundle(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitBundle" ):
-                listener.exitBundle(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBundle" ):
+                return visitor.visitBundle(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -792,13 +780,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_identifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterIdentifier" ):
-                listener.enterIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitIdentifier" ):
-                listener.exitIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIdentifier" ):
+                return visitor.visitIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -906,13 +892,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_expression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExpression" ):
-                listener.enterExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExpression" ):
-                listener.exitExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExpression" ):
+                return visitor.visitExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1026,13 +1010,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_entityExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterEntityExpression" ):
-                listener.enterEntityExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitEntityExpression" ):
-                listener.exitEntityExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEntityExpression" ):
+                return visitor.visitEntityExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1074,13 +1056,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_optionalAttributeValuePairs
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterOptionalAttributeValuePairs" ):
-                listener.enterOptionalAttributeValuePairs(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitOptionalAttributeValuePairs" ):
-                listener.exitOptionalAttributeValuePairs(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitOptionalAttributeValuePairs" ):
+                return visitor.visitOptionalAttributeValuePairs(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1130,13 +1110,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_attributeValuePairs
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAttributeValuePairs" ):
-                listener.enterAttributeValuePairs(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAttributeValuePairs" ):
-                listener.exitAttributeValuePairs(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAttributeValuePairs" ):
+                return visitor.visitAttributeValuePairs(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1197,13 +1175,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_attributeValuePair
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAttributeValuePair" ):
-                listener.enterAttributeValuePair(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAttributeValuePair" ):
-                listener.exitAttributeValuePair(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAttributeValuePair" ):
+                return visitor.visitAttributeValuePair(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1243,13 +1219,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_attribute
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAttribute" ):
-                listener.enterAttribute(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAttribute" ):
-                listener.exitAttribute(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAttribute" ):
+                return visitor.visitAttribute(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1293,13 +1267,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_literal
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLiteral" ):
-                listener.enterLiteral(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLiteral" ):
-                listener.exitLiteral(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLiteral" ):
+                return visitor.visitLiteral(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1349,13 +1321,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_typedLiteral
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterTypedLiteral" ):
-                listener.enterTypedLiteral(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitTypedLiteral" ):
-                listener.exitTypedLiteral(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitTypedLiteral" ):
+                return visitor.visitTypedLiteral(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1395,13 +1365,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_datatype
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDatatype" ):
-                listener.enterDatatype(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDatatype" ):
-                listener.exitDatatype(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDatatype" ):
+                return visitor.visitDatatype(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1449,13 +1417,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_convenienceNotation
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterConvenienceNotation" ):
-                listener.enterConvenienceNotation(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitConvenienceNotation" ):
-                listener.exitConvenienceNotation(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitConvenienceNotation" ):
+                return visitor.visitConvenienceNotation(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1527,13 +1493,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_activityExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterActivityExpression" ):
-                listener.enterActivityExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitActivityExpression" ):
-                listener.exitActivityExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitActivityExpression" ):
+                return visitor.visitActivityExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1589,13 +1553,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_timeOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterTimeOrMarker" ):
-                listener.enterTimeOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitTimeOrMarker" ):
-                listener.exitTimeOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitTimeOrMarker" ):
+                return visitor.visitTimeOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1640,13 +1602,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_time
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterTime" ):
-                listener.enterTime(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitTime" ):
-                listener.exitTime(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitTime" ):
+                return visitor.visitTime(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1696,13 +1656,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_generationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterGenerationExpression" ):
-                listener.enterGenerationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitGenerationExpression" ):
-                listener.exitGenerationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitGenerationExpression" ):
+                return visitor.visitGenerationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1760,13 +1718,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_optionalIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterOptionalIdentifier" ):
-                listener.enterOptionalIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitOptionalIdentifier" ):
-                listener.exitOptionalIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitOptionalIdentifier" ):
+                return visitor.visitOptionalIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1808,13 +1764,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_identifierOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterIdentifierOrMarker" ):
-                listener.enterIdentifierOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitIdentifierOrMarker" ):
-                listener.exitIdentifierOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIdentifierOrMarker" ):
+                return visitor.visitIdentifierOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1860,13 +1814,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_eIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterEIdentifier" ):
-                listener.enterEIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitEIdentifier" ):
-                listener.exitEIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEIdentifier" ):
+                return visitor.visitEIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1900,13 +1852,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_eIdentifierOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterEIdentifierOrMarker" ):
-                listener.enterEIdentifierOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitEIdentifierOrMarker" ):
-                listener.exitEIdentifierOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEIdentifierOrMarker" ):
+                return visitor.visitEIdentifierOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1952,13 +1902,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_aIdentifierOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAIdentifierOrMarker" ):
-                listener.enterAIdentifierOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAIdentifierOrMarker" ):
-                listener.exitAIdentifierOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAIdentifierOrMarker" ):
+                return visitor.visitAIdentifierOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2004,13 +1952,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_aIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAIdentifier" ):
-                listener.enterAIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAIdentifier" ):
-                listener.exitAIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAIdentifier" ):
+                return visitor.visitAIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2044,13 +1990,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_agIdentifierOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAgIdentifierOrMarker" ):
-                listener.enterAgIdentifierOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAgIdentifierOrMarker" ):
-                listener.exitAgIdentifierOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAgIdentifierOrMarker" ):
+                return visitor.visitAgIdentifierOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2096,13 +2040,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_agIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAgIdentifier" ):
-                listener.enterAgIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAgIdentifier" ):
-                listener.exitAgIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAgIdentifier" ):
+                return visitor.visitAgIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2136,13 +2078,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_cIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCIdentifier" ):
-                listener.enterCIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCIdentifier" ):
-                listener.exitCIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCIdentifier" ):
+                return visitor.visitCIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2176,13 +2116,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_gIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterGIdentifier" ):
-                listener.enterGIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitGIdentifier" ):
-                listener.exitGIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitGIdentifier" ):
+                return visitor.visitGIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2216,13 +2154,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_gIdentifierOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterGIdentifierOrMarker" ):
-                listener.enterGIdentifierOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitGIdentifierOrMarker" ):
-                listener.exitGIdentifierOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitGIdentifierOrMarker" ):
+                return visitor.visitGIdentifierOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2268,13 +2204,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_uIdentifier
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUIdentifier" ):
-                listener.enterUIdentifier(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUIdentifier" ):
-                listener.exitUIdentifier(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUIdentifier" ):
+                return visitor.visitUIdentifier(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2308,13 +2242,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_uIdentifierOrMarker
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUIdentifierOrMarker" ):
-                listener.enterUIdentifierOrMarker(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUIdentifierOrMarker" ):
-                listener.exitUIdentifierOrMarker(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUIdentifierOrMarker" ):
+                return visitor.visitUIdentifierOrMarker(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2376,13 +2308,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_usageExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUsageExpression" ):
-                listener.enterUsageExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUsageExpression" ):
-                listener.exitUsageExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUsageExpression" ):
+                return visitor.visitUsageExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2460,13 +2390,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_startExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterStartExpression" ):
-                listener.enterStartExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitStartExpression" ):
-                listener.exitStartExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitStartExpression" ):
+                return visitor.visitStartExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2548,13 +2476,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_endExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterEndExpression" ):
-                listener.enterEndExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitEndExpression" ):
-                listener.exitEndExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEndExpression" ):
+                return visitor.visitEndExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2632,13 +2558,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_invalidationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterInvalidationExpression" ):
-                listener.enterInvalidationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitInvalidationExpression" ):
-                listener.exitInvalidationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInvalidationExpression" ):
+                return visitor.visitInvalidationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2707,13 +2631,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_communicationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCommunicationExpression" ):
-                listener.enterCommunicationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCommunicationExpression" ):
-                listener.exitCommunicationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCommunicationExpression" ):
+                return visitor.visitCommunicationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2765,13 +2687,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_agentExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAgentExpression" ):
-                listener.enterAgentExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAgentExpression" ):
-                listener.exitAgentExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAgentExpression" ):
+                return visitor.visitAgentExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2829,13 +2749,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_associationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAssociationExpression" ):
-                listener.enterAssociationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAssociationExpression" ):
-                listener.exitAssociationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssociationExpression" ):
+                return visitor.visitAssociationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2905,13 +2823,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_attributionExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAttributionExpression" ):
-                listener.enterAttributionExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAttributionExpression" ):
-                listener.exitAttributionExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAttributionExpression" ):
+                return visitor.visitAttributionExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2974,13 +2890,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_delegationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDelegationExpression" ):
-                listener.enterDelegationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDelegationExpression" ):
-                listener.exitDelegationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDelegationExpression" ):
+                return visitor.visitDelegationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3061,13 +2975,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_derivationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDerivationExpression" ):
-                listener.enterDerivationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDerivationExpression" ):
-                listener.exitDerivationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDerivationExpression" ):
+                return visitor.visitDerivationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3144,13 +3056,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_influenceExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterInfluenceExpression" ):
-                listener.enterInfluenceExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitInfluenceExpression" ):
-                listener.exitInfluenceExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInfluenceExpression" ):
+                return visitor.visitInfluenceExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3201,13 +3111,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_alternateExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAlternateExpression" ):
-                listener.enterAlternateExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAlternateExpression" ):
-                listener.exitAlternateExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlternateExpression" ):
+                return visitor.visitAlternateExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3254,13 +3162,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_specializationExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSpecializationExpression" ):
-                listener.enterSpecializationExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSpecializationExpression" ):
-                listener.exitSpecializationExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSpecializationExpression" ):
+                return visitor.visitSpecializationExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3308,13 +3214,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_membershipExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMembershipExpression" ):
-                listener.enterMembershipExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMembershipExpression" ):
-                listener.exitMembershipExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMembershipExpression" ):
+                return visitor.visitMembershipExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3375,13 +3279,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_extensibilityExpression
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExtensibilityExpression" ):
-                listener.enterExtensibilityExpression(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExtensibilityExpression" ):
-                listener.exitExtensibilityExpression(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExtensibilityExpression" ):
+                return visitor.visitExtensibilityExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3460,13 +3362,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_extensibilityArgument
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExtensibilityArgument" ):
-                listener.enterExtensibilityArgument(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExtensibilityArgument" ):
-                listener.exitExtensibilityArgument(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExtensibilityArgument" ):
+                return visitor.visitExtensibilityArgument(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -3530,13 +3430,11 @@ class PROV_NParser ( Parser ):
         def getRuleIndex(self):
             return PROV_NParser.RULE_extensibilityTuple
 
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExtensibilityTuple" ):
-                listener.enterExtensibilityTuple(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExtensibilityTuple" ):
-                listener.exitExtensibilityTuple(self)
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExtensibilityTuple" ):
+                return visitor.visitExtensibilityTuple(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
