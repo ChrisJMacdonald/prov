@@ -33,6 +33,8 @@ from prov.serializers.antlr_grammars.PROV_NLexer import PROV_NLexer
 
 # codecs is used to generate a utf-8 string from bytesIO inputs
 import codecs
+# parsing of dates
+import dateutil.parser
 # TODO: used for debug outputs, remove at the end
 from pprint import pprint
 import pdb
@@ -62,9 +64,12 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         expression = ctx.expression()
 
         for exp in expression:
-            # TODO: do i need that?
+            #TODO: debug output
+            print("checking expression: {}".format(exp.getText()))
+            # TODO: do i need rec?
             rec = self.visitExpression(exp)
 
+        #TODO: debug output
         print(document.get_provn())
         return document
 
@@ -84,7 +89,7 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         return namespaces
 
     def visitDefaultNamespaceDeclaration(self, ctx):
-        print(ctx.IRI_REF())
+        # TODO: most certainly, there is something more to do here
         return None
     
     def visitNamespaceDeclaration(self, ctx):
@@ -98,39 +103,172 @@ class ProvNAntlrVisitor(PROV_NVisitor):
             iri_ref = iri_ref[1:-1]
         return (prefx, iri_ref)
     
-    def visitExpression(self, ctx):
-        """ Retrieves an expression in the form to create a new record: record_type (see :py:const:`PROV_REC_CLS`), an identifier and a dict of attributes.
-        """
-
-        if ctx.entityExpression() is not None:
-            return self.visitEntityExpression(ctx.entityExpression())
-
     def visitEntityExpression(self, ctx):
-        """ Retrieves an entity in a triplet form: record_type (see :py:const:`PROV_REC_CLS`), an identifier and a dict of attributes
+        """ Retrieves an entity created using the reference to _doc
         """
 
         identifier = self.visitIdentifier(ctx.identifier())
         entity = self._doc.entity(identifier)
 
-        optionalAttributes = ctx.optionalAttributeValuePairs()
-        if optionalAttributes is not None:
-            attValPairsContext = optionalAttributes.attributeValuePairs()
-            if attValPairsContext is not None:
-                for keyVals in attValPairsContext.attributeValuePair():
-                    attrPair = self.visitAttributeValuePair(keyVals)
-                    entity.add_attributes(attrPair)
+        self.add_attributes_to(entity, ctx)
 
         return entity
+
+    def visitActivityExpression(self, ctx):
+        """ Retrieves an activity created using the reference to _doc
+        """
+
+        identifier = self.visitIdentifier(ctx.identifier())
+        activity = self._doc.activity(identifier)
+        activity.set_time(self.visitTimeOrMarker(ctx.timeOrMarker(0)), self.visitTimeOrMarker(ctx.timeOrMarker(1)))
+
+        self.add_attributes_to(activity, ctx)
+
+        return activity
+
+    def visitAgentExpression(self, ctx):
+        """ Retrieves an agent creted using the reference to _doc
+        """
+
+        identifier = self.visitIdentifier(ctx.identifier())
+        agent = self._doc.agent(identifier)
+
+        self.add_attributes_to(agent, ctx)
+
+        return agent
+
+    def visitUsageExpression(self, ctx):
+        """ Retrieves a usage relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        activity = self.visitChildren(ctx.aIdentifier())
+        entity = self.visitChildren(ctx.eIdentifierOrMarker())
+        time = self.visitTimeOrMarker(ctx.timeOrMarker())
+        usage = self._doc.usage(activity, entity=entity, time=time, identifier=identifier)
+
+        self.add_attributes_to(usage, ctx)
+
+        return usage
+
+    def visitCommunicationExpression(self, ctx):
+        """ Retrieves a communication relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        activities = [self.visitChildren(ctx.aIdentifier(0)), self.visitChildren(ctx.aIdentifier(1))]
+        
+        communication = self._doc.communication(activities[0], activities[1], identifier=identifier)
+
+        return communication
+
+    def visitDerivationExpression(self, ctx):
+        """ Retrieves a derivation relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        entities = [self.visitChildren(ctx.eIdentifier(0)), self.visitChildren(ctx.eIdentifier(1))]
+        activity = self.visitChildren(ctx.aIdentifierOrMarker())
+        generation = self.visitChildren(ctx.gIdentifierOrMarker())
+        usage = self.visitChildren(ctx.uIdentifierOrMarker())
+
+        derivation = self._doc.derivation(entities[0], entities[1], activity=activity, generation=generation, usage=usage, identifier=identifier)
+
+        self.add_attributes_to(derivation, ctx)
+
+        return derivation
+
+    def visitAssociationExpression(self, ctx):
+        """ Retrievs an association relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        activity = self.visitChildren(ctx.aIdentifier())
+        agent = self.visitChildren(ctx.agIdentifierOrMarker())
+        plan = self.visitChildren(ctx.eIdentifierOrMarker())
+        association = self._doc.association(activity, agent=agent, plan=plan, identifier=identifier)
+
+        self.add_attributes_to(association, ctx)
+
+        return association
+
+    def visitAttributionExpression(self, ctx):
+        """ Retrieves an attribution relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        entity = self.visitChildren(ctx.eIdentifier())
+        agent = self.visitChildren(ctx.agIdentifier())
+        attribution = self._doc.attribution(entity, agent, identifier=identifier)
+
+        self.add_attributes_to(attribution, ctx)
+
+        return attribution
+
+    def visitGenerationExpression(self, ctx):
+        """ Retrieves a generation relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        entity = self.visitChildren(ctx.eIdentifier())
+        activity = self.visitChildren(ctx.aIdentifierOrMarker())
+        time = self.visitTimeOrMarker(ctx.timeOrMarker())
+        generation = self._doc.generation(entity, activity=activity, time=time, identifier=identifier)
+
+        self.add_attributes_to(generation, ctx)
+
+        return generation
+
+    def visitDelegationExpression(self, ctx):
+        """ Retrieves a delegation relation created using the reference to _doc
+        """
+
+        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
+        agents = [self.visitChildren(ctx.agIdentifier(0)), self.visitChildren(ctx.agIdentifier(1))]
+        activity = self.visitChildren(ctx.aIdentifierOrMarker())
+        delegation = self._doc.delegation(agents[0], agents[1], activity=activity, identifier=identifier)
+
+        self.add_attributes_to(delegation, ctx)
+
+        return delegation
 
     def visitIdentifier(self, ctx):
         """ Retrieves a string value for an identifier
         """
 
+        if ctx is None:
+            return None
         if ctx.PREFX() is not None:
             return ctx.PREFX().getText()
-        else:
+        elif ctx.QUALIFIED_NAME() is not None:
             return ctx.QUALIFIED_NAME().getText()
+        return None
     
+    def add_attributes_to(self, statement, ctx):
+        """ Iterates through all optionalAttributeValuePairs and adds them to the attributes of statement.
+        """
+        attributes = self.visitOptionalAttributeValuePairs(ctx.optionalAttributeValuePairs())
+        for att in attributes:
+            statement.add_attributes(att)
+        return statement
+
+    def visitOptionalAttributeValuePairs(self, ctx):
+        """ Gets the attribute value pairs from it child
+        """
+        return self.visitAttributeValuePairs(ctx.attributeValuePairs())
+
+    def visitAttributeValuePairs(self, ctx):
+        """ Creates and returns a list of all attribute value pairs that are generated as {key: value} dictionaries
+        """
+        allKeyVals = []
+        # catch elements without attributes
+        if ctx is None:
+            return allKeyVals
+
+        for keyVals in ctx.attributeValuePair():
+            allKeyVals.append(self.visitAttributeValuePair(keyVals))
+        return allKeyVals
+
     def visitAttributeValuePair(self, ctx):
         """ Returns an attribute value pair from an expression as a dictionary {attribute: value}
         """
@@ -175,6 +313,30 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         if string[:1] == string[-1:] and string[:1] in ["'", '"']:
             return string[1:-1]
         return string
+
+    def visitTimeOrMarker(self, ctx):
+        if ctx is None:
+            return None
+        return self.visitTime(ctx.time())
+
+    def visitTime(self, ctx):
+        if ctx is None:
+            return None
+        # TODO: possible parser exception? try to handle that gracefully
+        return dateutil.parser.parse(ctx.DATETIME().getText())
+
+    def visitOptionalIdentifier(self, ctx):
+        """ gets the optional identifier
+        """
+        return self.visitIdentifierOrMarker(ctx.identifierOrMarker())
+    
+    def visitIdentifierOrMarker(self, ctx):
+        """ Returns an identifier (PREFX or QUALIFIED_NAME) is supplied, otherwise return None for a marker ( '-' in PROV-N)
+        """
+        if ctx is None or ctx.identifier() is None:
+            return None
+
+        return self.visitIdentifier(ctx.identifier())
 
 
 class ProvNSerializer(Serializer):

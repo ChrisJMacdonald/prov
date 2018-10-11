@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 """
-class TestJSONSerializer(unittest.TestCase):
+class TestPROVNSerializer(unittest.TestCase):
     def test_decoding_unicode_value(self):
         unicode_char = u'\u2019'
         json_content = u'''{
