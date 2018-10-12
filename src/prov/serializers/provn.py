@@ -16,7 +16,7 @@ from antlr4 import ParseTreeWalker
 # InputStream is needed to transform the input stream from BytesIO to a InputStream explicitly
 from antlr4 import InputStream
 
-from prov.model import ProvDocument
+import prov.model as pm
 from prov.serializers import Serializer
 from prov.constants import (
     PROV, PROV_ID_ATTRIBUTES_MAP, PROV_N_MAP, PROV_BASE_CLS, XSD_QNAME, PROV_ENTITY,
@@ -51,7 +51,7 @@ class ProvNAntlrVisitor(PROV_NVisitor):
     """
 
     def visitDocument(self, ctx):
-        document = ProvDocument()
+        document = pm.ProvDocument()
         self._doc = document
 
         # retrieve the namespaces as a list of prefx, iri_ref tuples (both as strings)
@@ -107,130 +107,164 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         """ Retrieves an entity created using the reference to _doc
         """
 
-        identifier = self.visitIdentifier(ctx.identifier())
-        entity = self._doc.entity(identifier)
-
-        self.add_attributes_to(entity, ctx)
-
-        return entity
+        return self.createStatementFromVisit("entity", { "identifier": ctx.identifier() }, ctx)
 
     def visitActivityExpression(self, ctx):
         """ Retrieves an activity created using the reference to _doc
         """
 
-        identifier = self.visitIdentifier(ctx.identifier())
-        activity = self._doc.activity(identifier)
-        activity.set_time(self.visitTimeOrMarker(ctx.timeOrMarker(0)), self.visitTimeOrMarker(ctx.timeOrMarker(1)))
-
-        self.add_attributes_to(activity, ctx)
-
-        return activity
+        return self.createStatementFromVisit("activity", {
+                "identifier": ctx.identifier(),
+                "startTime": ctx.timeOrMarker(0),
+                "endTime": ctx.timeOrMarker(1)
+            }, ctx)
 
     def visitAgentExpression(self, ctx):
         """ Retrieves an agent creted using the reference to _doc
         """
 
-        identifier = self.visitIdentifier(ctx.identifier())
-        agent = self._doc.agent(identifier)
-
-        self.add_attributes_to(agent, ctx)
-
-        return agent
+        return self.createStatementFromVisit("agent", { "identifier": ctx.identifier() }, ctx)
 
     def visitUsageExpression(self, ctx):
         """ Retrieves a usage relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        activity = self.visitChildren(ctx.aIdentifier())
-        entity = self.visitChildren(ctx.eIdentifierOrMarker())
-        time = self.visitTimeOrMarker(ctx.timeOrMarker())
-        usage = self._doc.usage(activity, entity=entity, time=time, identifier=identifier)
-
-        self.add_attributes_to(usage, ctx)
-
-        return usage
+        return self.createStatementFromVisit("usage", {
+                "activity": ctx.aIdentifier(),
+                "entity": ctx.eIdentifierOrMarker(),
+                "time": ctx.timeOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
     def visitCommunicationExpression(self, ctx):
         """ Retrieves a communication relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        activities = [self.visitChildren(ctx.aIdentifier(0)), self.visitChildren(ctx.aIdentifier(1))]
-        
-        communication = self._doc.communication(activities[0], activities[1], identifier=identifier)
-
-        return communication
+        return self.createStatementFromVisit("communication", {
+                "informed": ctx.aIdentifier(0),
+                "informant": ctx.aIdentifier(1),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
     def visitDerivationExpression(self, ctx):
         """ Retrieves a derivation relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        entities = [self.visitChildren(ctx.eIdentifier(0)), self.visitChildren(ctx.eIdentifier(1))]
-        activity = self.visitChildren(ctx.aIdentifierOrMarker())
-        generation = self.visitChildren(ctx.gIdentifierOrMarker())
-        usage = self.visitChildren(ctx.uIdentifierOrMarker())
-
-        derivation = self._doc.derivation(entities[0], entities[1], activity=activity, generation=generation, usage=usage, identifier=identifier)
-
-        self.add_attributes_to(derivation, ctx)
-
-        return derivation
+        return self.createStatementFromVisit("derivation", {
+                "generatedEntity": ctx.eIdentifier(0),
+                "usedEntity": ctx.eIdentifier(1),
+                "activity": ctx.aIdentifierOrMarker(),
+                "generation": ctx.gIdentifierOrMarker(),
+                "usage": ctx.uIdentifierOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
     def visitAssociationExpression(self, ctx):
         """ Retrievs an association relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        activity = self.visitChildren(ctx.aIdentifier())
-        agent = self.visitChildren(ctx.agIdentifierOrMarker())
-        plan = self.visitChildren(ctx.eIdentifierOrMarker())
-        association = self._doc.association(activity, agent=agent, plan=plan, identifier=identifier)
-
-        self.add_attributes_to(association, ctx)
-
-        return association
+        return self.createStatementFromVisit("association", {
+                "activity": ctx.aIdentifier(),
+                "agent": ctx.agIdentifierOrMarker(),
+                "plan": ctx.eIdentifierOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
     def visitAttributionExpression(self, ctx):
         """ Retrieves an attribution relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        entity = self.visitChildren(ctx.eIdentifier())
-        agent = self.visitChildren(ctx.agIdentifier())
-        attribution = self._doc.attribution(entity, agent, identifier=identifier)
-
-        self.add_attributes_to(attribution, ctx)
-
-        return attribution
+        return self.createStatementFromVisit("attribution", {
+                "identifier": ctx.optionalIdentifier(),
+                "entity": ctx.eIdentifier(),
+                "agent": ctx.agIdentifier()
+            }, ctx)
 
     def visitGenerationExpression(self, ctx):
         """ Retrieves a generation relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        entity = self.visitChildren(ctx.eIdentifier())
-        activity = self.visitChildren(ctx.aIdentifierOrMarker())
-        time = self.visitTimeOrMarker(ctx.timeOrMarker())
-        generation = self._doc.generation(entity, activity=activity, time=time, identifier=identifier)
-
-        self.add_attributes_to(generation, ctx)
-
-        return generation
+        return self.createStatementFromVisit("generation", {
+                "entity": ctx.eIdentifier(),
+                "activity": ctx.aIdentifierOrMarker(),
+                "time": ctx.timeOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
     def visitDelegationExpression(self, ctx):
         """ Retrieves a delegation relation created using the reference to _doc
         """
 
-        identifier = self.visitOptionalIdentifier(ctx.optionalIdentifier())
-        agents = [self.visitChildren(ctx.agIdentifier(0)), self.visitChildren(ctx.agIdentifier(1))]
-        activity = self.visitChildren(ctx.aIdentifierOrMarker())
-        delegation = self._doc.delegation(agents[0], agents[1], activity=activity, identifier=identifier)
+        return self.createStatementFromVisit("delegation", {
+                "delegate": ctx.agIdentifier(0),
+                "responsible": ctx.agIdentifier(1),
+                "activity": ctx.aIdentifierOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
-        self.add_attributes_to(delegation, ctx)
+    def visitStartExpression(self, ctx):
+        """ TODO: text
+        """
 
-        return delegation
+        return self.createStatementFromVisit("start", {
+                "activity": ctx.aIdentifier(),
+                "trigger": ctx.eIdentifierOrMarker(),
+                "starter": ctx.aIdentifierOrMarker(),
+                "time": ctx.timeOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
+
+    def visitEndExpression(self, ctx):
+        """ TODO: text
+        """
+
+        return self.createStatementFromVisit("end", {
+                "activity": ctx.aIdentifier(),
+                "trigger": ctx.eIdentifierOrMarker(),
+                "ender": ctx.aIdentifierOrMarker(),
+                "time": ctx.timeOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
+
+    def visitInvalidationExpression(self, ctx):
+        """ TODO: text
+        """
+
+        return self.createStatementFromVisit("invalidation", {
+                "entity": ctx.eIdentifier(),
+                "activity": ctx.aIdentifierOrMarker(),
+                "time": ctx.timeOrMarker(),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
+
+    def visitSpecializationExpression(self, ctx):
+        """ TODO: text
+        """
+
+        return self.createStatementFromVisit("specialization", {
+                "specificEntity": ctx.eIdentifier(0),
+                "generalEntity": ctx.eIdentifier(1)
+            }, ctx)
+
+    def visitMembershipExpression(self, ctx):
+        """ TODO: text
+        """
+
+        return self.createStatementFromVisit("membership", {
+                "collection": ctx.cIdentifier(),
+                "entity": ctx.eIdentifier()
+            }, ctx)
+
+    def visitInfluenceExpression(self, ctx):
+        """ TODO: text
+        """
+
+        self._doc.influence
+        return self.createStatementFromVisit("influence", {
+                "influencee": ctx.eIdentifier(0),
+                "influencer": ctx.eIdentifier(1),
+                "identifier": ctx.optionalIdentifier()
+            }, ctx)
 
     def visitIdentifier(self, ctx):
         """ Retrieves a string value for an identifier
@@ -243,14 +277,30 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         elif ctx.QUALIFIED_NAME() is not None:
             return ctx.QUALIFIED_NAME().getText()
         return None
-    
-    def add_attributes_to(self, statement, ctx):
-        """ Iterates through all optionalAttributeValuePairs and adds them to the attributes of statement.
+
+    def visitOptionalIdentifier(self, ctx):
+        """ gets the optional identifier
         """
-        attributes = self.visitOptionalAttributeValuePairs(ctx.optionalAttributeValuePairs())
-        for att in attributes:
-            statement.add_attributes(att)
-        return statement
+        return self.visitIdentifierOrMarker(ctx.identifierOrMarker())
+    
+    def visitIdentifierOrMarker(self, ctx):
+        """ Returns an identifier (PREFX or QUALIFIED_NAME) is supplied, otherwise return None for a marker ( '-' in PROV-N)
+        """
+        if ctx is None or ctx.identifier() is None:
+            return None
+
+        return self.visitIdentifier(ctx.identifier())
+
+    def visitTimeOrMarker(self, ctx):
+        if ctx is None:
+            return None
+        return self.visitTime(ctx.time())
+
+    def visitTime(self, ctx):
+        if ctx is None:
+            return None
+        # TODO: possible parser exception? try to handle that gracefully
+        return dateutil.parser.parse(ctx.DATETIME().getText())
 
     def visitOptionalAttributeValuePairs(self, ctx):
         """ Gets the attribute value pairs from it child
@@ -274,7 +324,7 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         """
 
         return {
-            self.visitAttribute(ctx.attribute()): self.visitLiteral(ctx.literal())
+            self.visitAttribute(ctx.attribute()): self.visitChildren(ctx.literal())
         }
 
     def visitAttribute(self, ctx):
@@ -282,13 +332,15 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         """
 
         return self.visitIdentifier(ctx)
-    
-    def visitLiteral(self, ctx):
-        if ctx.typedLiteral() is not None:
-            return "typedLiteral"
-        if ctx.convenienceNotation() is not None:
-            return self.visitConvenienceNotation(ctx.convenienceNotation())
-        return ""
+
+    def visitTypedLiteral(self, ctx):
+        """ Returns a typed literal, based on the cleaned string value and the qualified name datatype
+        """
+        if ctx.STRING_LITERAL() is None or ctx.datatype() is None:
+            return None
+        stringLiteral = self.cleanStringValues(ctx.STRING_LITERAL().getText())
+        datatype = self._doc.valid_qualified_name(self.cleanStringValues(ctx.datatype().getText()))
+        return pm.Literal(stringLiteral, datatype=datatype)
     
     def visitConvenienceNotation(self, ctx):
         """ Retrieves values from convenience notations within attribute lists of prov records as a single value (depending on its type)
@@ -297,46 +349,58 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         # handle string literals
         if ctx.STRING_LITERAL() is not None:
             if ctx.LANGTAG() is not None:
-                return "how to parse that?"
+                # TODO: antlr4 yield errors with langtags, awaiting bugfix for this
+                return None
             return self.cleanStringValues(ctx.STRING_LITERAL().getText())
 
         # handle int literals
         if ctx.INT_LITERAL() is not None:
-            # TODO: parse as int
-            return ctx.INT_LITERAL().getText()
+            return int(ctx.INT_LITERAL().getText())
 
         # handle qualified name literals
         if ctx.QUALIFIED_NAME_LITERAL() is not None:
             return self._doc.valid_qualified_name(self.cleanStringValues(ctx.QUALIFIED_NAME_LITERAL().getText()))
 
     def cleanStringValues(self, string):
+        """ Cleans special characters from String typed values.
+        This method will clean surrounding quotation marks from a String value. This way, they will be handled as python string values without depending on the quotation marks that are used in the PROV-N document. If no quotations surround the string, no modification will be made.
+        """
         if string[:1] == string[-1:] and string[:1] in ["'", '"']:
             return string[1:-1]
         return string
 
-    def visitTimeOrMarker(self, ctx):
-        if ctx is None:
-            return None
-        return self.visitTime(ctx.time())
-
-    def visitTime(self, ctx):
-        if ctx is None:
-            return None
-        # TODO: possible parser exception? try to handle that gracefully
-        return dateutil.parser.parse(ctx.DATETIME().getText())
-
-    def visitOptionalIdentifier(self, ctx):
-        """ gets the optional identifier
+    def createStatementFromVisit(self, stmt_name, args, ctx):
+        """ Creates a prov statement from the parameters supplied.
+        TODO: make that a longer description
         """
-        return self.visitIdentifierOrMarker(ctx.identifierOrMarker())
+        if hasattr( self._doc, stmt_name ):
+            for prop, prop_context in args.items():
+                if isinstance(prop_context, PROV_NParser.TimeOrMarkerContext):
+                    args[prop] = self.visitTimeOrMarker(prop_context)
+                elif isinstance(prop_context, PROV_NParser.OptionalIdentifierContext):
+                    args[prop] = self.visitOptionalIdentifier(prop_context)
+                elif isinstance(prop_context, PROV_NParser.IdentifierContext):
+                    args[prop] = self.visitIdentifier(prop_context)
+                else:
+                    args[prop] = self.visitChildren(prop_context)
+
+            method = getattr( self._doc, stmt_name)
+            statement = method(**args)
+            if hasattr(ctx, "optionalAttributeValuePairs"):
+                self.add_attributes_to(statement, ctx)
+
+            return statement
+        else:
+            return None
     
-    def visitIdentifierOrMarker(self, ctx):
-        """ Returns an identifier (PREFX or QUALIFIED_NAME) is supplied, otherwise return None for a marker ( '-' in PROV-N)
+    def add_attributes_to(self, statement, ctx):
+        """ Iterates through all optionalAttributeValuePairs and adds them to the attributes of statement.
         """
-        if ctx is None or ctx.identifier() is None:
-            return None
-
-        return self.visitIdentifier(ctx.identifier())
+        attributes = self.visitOptionalAttributeValuePairs(ctx.optionalAttributeValuePairs())
+        for att in attributes:
+            pprint(att)
+            statement.add_attributes(att)
+        return statement
 
 
 class ProvNSerializer(Serializer):
