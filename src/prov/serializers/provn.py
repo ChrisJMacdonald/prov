@@ -50,10 +50,33 @@ class ProvNAntlrVisitor(PROV_NVisitor):
 
     """
 
-    def visitDocument(self, ctx):
+    def visitDocument(self, ctx:PROV_NParser.DocumentContext):
         document = pm.ProvDocument()
         self._doc = document
 
+        self.parseContainer(document, ctx)
+
+        # after the expressions, parse the bundles
+        bundles = ctx.bundle()
+        for bun in bundles:
+            self.visitBundle(bun)
+
+        print("one document", document.get_provn())
+        return document
+
+    def visitBundle(self, ctx:PROV_NParser.BundleContext):
+        bundle = pm.ProvBundle(document=self._doc)
+        parentDoc = self._doc
+        self._doc = bundle
+
+        self.parseContainer(bundle, ctx)
+
+        self._doc = parentDoc
+        self._doc.add_bundle(bundle, self.visitIdentifier(ctx.identifier()))
+        
+    def parseContainer(self, document, ctx):
+        """ Really cool description
+        """
         # retrieve the namespaces as a list of prefx, iri_ref tuples (both as strings)
         namespaceDeclarations = ctx.namespaceDeclarations()
         if namespaceDeclarations is not None:
@@ -61,25 +84,15 @@ class ProvNAntlrVisitor(PROV_NVisitor):
             for ns in namespaces:
                 document.add_namespace(ns[0], ns[1])
 
+        # handle all expressions
         expression = ctx.expression()
-
         for exp in expression:
-            #TODO: debug output
-            print("checking expression: {}".format(exp.getText()))
-            # TODO: do i need rec?
-            rec = self.visitExpression(exp)
-
-        #TODO: debug output
-        print(document.get_provn())
-        return document
+            self.visitExpression(exp)
 
     def visitNamespaceDeclarations(self, ctx):
         """ Visit the namespaces and retrieve them as PREFX, IRI_REF tuples in a list.
         """
         namespaces = []
-        #defNsDeclaration = ctx.defaultNamespaceDeclaration()
-        #if defNsDeclaration is not None:
-        #    self.visitDefaultNamespaceDeclaration(defNsDeclaration)
 
         nsDeclaration = ctx.namespaceDeclaration()
         if nsDeclaration is not None:
@@ -259,11 +272,19 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         """ TODO: text
         """
 
-        self._doc.influence
         return self.createStatementFromVisit("influence", {
                 "influencee": ctx.eIdentifier(0),
                 "influencer": ctx.eIdentifier(1),
                 "identifier": ctx.optionalIdentifier()
+            }, ctx)
+
+    def visitAlternateExpression(self, ctx:PROV_NParser.AlternateExpressionContext):
+        """ TODO: text
+        """
+
+        return self.createStatementFromVisit("alternate", {
+                "alternate1": ctx.eIdentifier(0),
+                "alternate2": ctx.eIdentifier(1)
             }, ctx)
 
     def visitIdentifier(self, ctx):
@@ -305,11 +326,13 @@ class ProvNAntlrVisitor(PROV_NVisitor):
     def visitOptionalAttributeValuePairs(self, ctx):
         """ Gets the attribute value pairs from it child
         """
+
         return self.visitAttributeValuePairs(ctx.attributeValuePairs())
 
     def visitAttributeValuePairs(self, ctx):
         """ Creates and returns a list of all attribute value pairs that are generated as {key: value} dictionaries
         """
+
         allKeyVals = []
         # catch elements without attributes
         if ctx is None:
@@ -336,11 +359,23 @@ class ProvNAntlrVisitor(PROV_NVisitor):
     def visitTypedLiteral(self, ctx):
         """ Returns a typed literal, based on the cleaned string value and the qualified name datatype
         """
+
         if ctx.STRING_LITERAL() is None or ctx.datatype() is None:
             return None
         stringLiteral = self.cleanStringValues(ctx.STRING_LITERAL().getText())
-        datatype = self._doc.valid_qualified_name(self.cleanStringValues(ctx.datatype().getText()))
-        return pm.Literal(stringLiteral, datatype=datatype)
+        datatype = self.cleanStringValues(ctx.datatype().getText())
+        # TODO: formalize this in another way, there has to be one
+        if datatype == 'xsd:float':
+            return float(stringLiteral)
+        elif datatype == 'xsd:int':
+            return int(stringLiteral)
+        elif datatype == 'xsd:string':
+            return stringLiteral
+        elif datatype == 'xsd:double':
+            return float(stringLiteral)
+        else:
+            datatype = self._doc.valid_qualified_name(self.cleanStringValues(ctx.datatype().getText()))
+            return pm.Literal(stringLiteral, datatype=datatype)
     
     def visitConvenienceNotation(self, ctx):
         """ Retrieves values from convenience notations within attribute lists of prov records as a single value (depending on its type)
@@ -349,8 +384,8 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         # handle string literals
         if ctx.STRING_LITERAL() is not None:
             if ctx.LANGTAG() is not None:
-                # TODO: antlr4 yield errors with langtags, awaiting bugfix for this
-                return None
+                # The LANGTAG-getText value includes the @ character, which is not needed
+                return pm.Literal(self.cleanStringValues(ctx.STRING_LITERAL().getText()), langtag=ctx.LANGTAG().getText()[1:])
             return self.cleanStringValues(ctx.STRING_LITERAL().getText())
 
         # handle int literals
@@ -365,6 +400,9 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         """ Cleans special characters from String typed values.
         This method will clean surrounding quotation marks from a String value. This way, they will be handled as python string values without depending on the quotation marks that are used in the PROV-N document. If no quotations surround the string, no modification will be made.
         """
+
+        if string[:3] == string[-3:] and string[:3] in ["'''", '"""']:
+            return string[3:-3]
         if string[:1] == string[-1:] and string[:1] in ["'", '"']:
             return string[1:-1]
         return string
@@ -398,7 +436,6 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         """
         attributes = self.visitOptionalAttributeValuePairs(ctx.optionalAttributeValuePairs())
         for att in attributes:
-            pprint(att)
             statement.add_attributes(att)
         return statement
 
