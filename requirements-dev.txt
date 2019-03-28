@@ -5,4 +5,4 @@ flake8
 sphinx
 tox
 wheel
-antlr4-python3-runtime==4.7.1
+antlr4-python3-runtime
