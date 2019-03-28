@@ -37,6 +37,7 @@ import codecs
 import dateutil.parser
 # TODO: used for debug outputs, remove at the end
 from pprint import pprint
+import random
 import pdb
 
 class ProvNAntlrVisitor(PROV_NVisitor):
@@ -51,9 +52,10 @@ class ProvNAntlrVisitor(PROV_NVisitor):
     """
 
     def visitDocument(self, ctx:PROV_NParser.DocumentContext):
+        """
+        """
         document = pm.ProvDocument()
         self._doc = document
-
         self.parseContainer(document, ctx)
 
         # after the expressions, parse the bundles
@@ -65,21 +67,35 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         return document
 
     def visitBundle(self, ctx:PROV_NParser.BundleContext):
+        """
+        """
         bundle = pm.ProvBundle(document=self._doc)
         parentDoc = self._doc
         self._doc = bundle
-
         self.parseContainer(bundle, ctx)
-
         self._doc = parentDoc
-        self._doc.add_bundle(bundle, self.visitIdentifier(ctx.identifier()))
+
+        hackId = self.visitIdentifier(ctx.identifier())
+        if hackId is None:
+            hackId = 'ex:hackyIdIInvented{}'.format(random.randint(0, 1024))
+            print("An ID is hacked: {}".format(hackId))
+
+        print("The ID: {}".format(hackid))
+        self._doc.add_bundle(bundle, identifier=hackId)
         
     def parseContainer(self, document, ctx):
         """ Really cool description
         """
+
         # retrieve the namespaces as a list of prefx, iri_ref tuples (both as strings)
         namespaceDeclarations = ctx.namespaceDeclarations()
         if namespaceDeclarations is not None:
+
+            # get the default namespace, if available
+            defNamespace = self.visitDefaultNamespaceDeclaration(namespaceDeclarations)
+            if defNamespace is not None:
+                document.set_default_namespace(defNamespace)
+
             namespaces = self.visitNamespaceDeclarations(namespaceDeclarations)
             for ns in namespaces:
                 document.add_namespace(ns[0], ns[1])
@@ -102,7 +118,15 @@ class ProvNAntlrVisitor(PROV_NVisitor):
         return namespaces
 
     def visitDefaultNamespaceDeclaration(self, ctx):
-        # TODO: most certainly, there is something more to do here
+        """ TODO: text
+        """
+
+        defNs = ctx.defaultNamespaceDeclaration()
+        if defNs is not None:
+            defNsStr = defNs.IRI_REF().getText()
+            if defNsStr[:1] == '<' and defNsStr[-1:] == '>':
+                return defNsStr[1:-1]
+            return defNsStr
         return None
     
     def visitNamespaceDeclaration(self, ctx):
